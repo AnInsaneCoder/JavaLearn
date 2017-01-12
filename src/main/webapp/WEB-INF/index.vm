@@ -1,0 +1,17 @@
+#set($greet = "Hello")
+<!doctype html>
+<html>
+<head>
+    <title>$title</title>
+</head>
+<body>
+    <h3>$greet $person.name!</h3>
+    <div>You are $person.age years old and your favorite sport is $person.hobby.sport.</div>
+    <div>Your favorite football stars are as follows:</div>
+    <ul>
+    #foreach($item in $person.favoriteStars)
+        <li>$item.name $item.age $item.nationality</li>
+    #end
+    </ul>
+</body>
+</html>

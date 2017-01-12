@@ -1,0 +1,13 @@
+## declare a variable
+#set ($greet = "Hello")
+
+## declare a macro
+#macro(sayHello $name)
+    Hello $name!
+#end
+
+$greet $map.name! You are $map.age years old and your favorite sport is $map.sport.
+#foreach($i in $list)
+    $i
+#end
+#sayHello("InsaneCoder")
