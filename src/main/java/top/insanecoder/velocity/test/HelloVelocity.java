@@ -36,6 +36,6 @@ public class HelloVelocity {
         context.put("list", list);
         StringWriter sw = new StringWriter();
         velocityEngine.mergeTemplate("hello.vm", "utf-8", context, sw);
-        System.out.println(sw);
+        System.out.println(sw.toString());
     }
 }
