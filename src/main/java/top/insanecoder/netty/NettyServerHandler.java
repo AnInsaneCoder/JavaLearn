@@ -1,5 +1,7 @@
 package top.insanecoder.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -10,7 +12,14 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        super.channelRead(ctx, msg);
+        ByteBuf byteBuf = (ByteBuf) msg;
+        byte[] data = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(data);
+        String body = new String(data, "utf-8");
+        System.out.println(body);
+        long curTime = System.currentTimeMillis();
+        ByteBuf resp = Unpooled.copiedBuffer((curTime + "").getBytes());
+        ctx.writeAndFlush(resp);
     }
 
     @Override
