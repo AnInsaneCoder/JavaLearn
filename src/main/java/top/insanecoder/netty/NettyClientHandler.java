@@ -11,16 +11,21 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  */
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
-    private ByteBuf msgToSend;
+    private byte[] msgToSend;
 
     public NettyClientHandler() {
         String str = "Message from netty client!!!";
-        msgToSend = Unpooled.copiedBuffer(str.getBytes());
+        msgToSend = str.getBytes();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        ctx.writeAndFlush(msgToSend);
+        ByteBuf byteBuf = null;
+        for (int i = 0; i < 100; i++) {
+            byteBuf = Unpooled.buffer(msgToSend.length);
+            byteBuf.writeBytes(msgToSend);
+            ctx.writeAndFlush(byteBuf);
+        }
     }
 
     @Override
