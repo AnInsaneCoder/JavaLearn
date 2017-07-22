@@ -17,19 +17,15 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
     private byte[] msgToSend;
 
     public NettyClientHandler() {
-        String str = "Message from netty client!!!";
+        String str = "QUERY TIME";
         msgToSend = str.getBytes();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        ByteBuf byteBuf = null;
-        for (int i = 0; i < 10; i++) {
-            byteBuf = Unpooled.buffer(msgToSend.length);
-            byteBuf.writeBytes(msgToSend);
-            ctx.writeAndFlush(byteBuf);
-            Thread.sleep(1000);
-        }
+        ByteBuf byteBuf = Unpooled.buffer(msgToSend.length);
+        byteBuf.writeBytes(msgToSend);
+        ctx.writeAndFlush(byteBuf);
     }
 
     @Override

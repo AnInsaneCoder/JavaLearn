@@ -7,6 +7,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import org.apache.log4j.Logger;
 
+import java.util.Date;
+
 /**
  * @author shaohang.zsh
  * @version 0.1 创建时间: 2017-05-25
@@ -22,10 +24,8 @@ public class NettyServerHandler extends ChannelHandlerAdapter {
         byteBuf.readBytes(data);
         String body = new String(data, "utf-8");
         logger.info(body);
-        long curTime = System.currentTimeMillis();
-        ByteBuf resp = Unpooled.copiedBuffer((curTime + "").getBytes());
-        ctx.write(resp);
-        ctx.flush();
+        ByteBuf resp = Unpooled.copiedBuffer(new Date(System.currentTimeMillis()).toString().getBytes());
+        ctx.writeAndFlush(resp);
     }
 
     @Override
@@ -40,6 +40,5 @@ public class NettyServerHandler extends ChannelHandlerAdapter {
     @Override
     public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
         super.disconnect(ctx, promise);
-        logger.info("client disconnected!!!");
     }
 }
