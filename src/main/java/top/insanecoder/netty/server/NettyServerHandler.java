@@ -17,14 +17,14 @@ public class NettyServerHandler extends ChannelHandlerAdapter {
 
     private static Logger logger = Logger.getLogger(NettyServerHandler.class);
 
+    private int counter = 0;
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf byteBuf = (ByteBuf) msg;
-        byte[] data = new byte[byteBuf.readableBytes()];
-        byteBuf.readBytes(data);
-        String body = new String(data, "utf-8");
-        logger.info(body);
-        ByteBuf resp = Unpooled.copiedBuffer(new Date(System.currentTimeMillis()).toString().getBytes());
+        String body = (String) msg;
+        logger.info(body + " : " + counter++);
+        String curTime = new Date(System.currentTimeMillis()).toString() + System.getProperty("line.separator");
+        ByteBuf resp = Unpooled.copiedBuffer(curTime.getBytes());
         ctx.writeAndFlush(resp);
     }
 
