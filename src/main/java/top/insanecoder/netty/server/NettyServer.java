@@ -1,4 +1,4 @@
-package top.insanecoder.netty;
+package top.insanecoder.netty.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;

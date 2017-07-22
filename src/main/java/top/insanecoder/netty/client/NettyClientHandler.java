@@ -1,15 +1,18 @@
-package top.insanecoder.netty;
+package top.insanecoder.netty.client;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.log4j.Logger;
 
 /**
  * @author shaohang.zsh
  * @version 0.1 创建时间: 2017-05-25
  */
-public class NettyClientHandler extends ChannelInboundHandlerAdapter {
+public class NettyClientHandler extends ChannelHandlerAdapter {
+
+    private static Logger logger = Logger.getLogger(NettyClientHandler.class);
 
     private byte[] msgToSend;
 
@@ -21,10 +24,11 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ByteBuf byteBuf = null;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             byteBuf = Unpooled.buffer(msgToSend.length);
             byteBuf.writeBytes(msgToSend);
             ctx.writeAndFlush(byteBuf);
+            Thread.sleep(1000);
         }
     }
 
@@ -34,7 +38,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
         byte[] data = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(data);
         String body = new String(data, "utf-8");
-        System.out.println(body);
+        logger.info(body);
     }
 
     @Override
