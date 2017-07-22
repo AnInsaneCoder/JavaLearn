@@ -1,15 +1,16 @@
 package top.insanecoder.netty.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import org.apache.log4j.Logger;
+import top.insanecoder.netty.enums.HandlerTypeEnum;
+import top.insanecoder.netty.factory.DefaultDelimiterDecoder;
+import top.insanecoder.netty.factory.DefaultLineFrameDecoder;
+import top.insanecoder.netty.factory.FrameDecoderFactory;
 
 /**
  * @author shaohang.zsh
@@ -17,9 +18,13 @@ import io.netty.handler.codec.string.StringDecoder;
  */
 public class NettyClient {
 
-    public static void main(String[] args) throws InterruptedException {
+    private static final Logger logger = Logger.getLogger(NettyClient.class);
 
-        new NettyClient().connect("127.0.0.1", 8007);
+    private HandlerTypeEnum handlerType;
+
+    public NettyClient buildHandlerType (HandlerTypeEnum handlerType) {
+        this.handlerType = handlerType;
+        return this;
     }
 
     public void connect(String ip, int port) throws InterruptedException {
@@ -40,9 +45,21 @@ public class NettyClient {
     private class MyChannelHandler extends ChannelInitializer<SocketChannel> {
 
         protected void initChannel(SocketChannel socketChannel) throws Exception {
-            socketChannel.pipeline().addLast(new LineBasedFrameDecoder(1024));
-            socketChannel.pipeline().addLast(new StringDecoder());
-            socketChannel.pipeline().addLast(new NettyClientHandler());
+            switch (handlerType) {
+                case LINE_BASED_DECODER:
+                    socketChannel.pipeline().addLast(FrameDecoderFactory.newInstance(DefaultLineFrameDecoder.class));
+                    socketChannel.pipeline().addLast(new StringDecoder());
+                    socketChannel.pipeline().addLast(new NettyClientHandler(System.getProperty("line.separator")));
+                    break;
+                case DELIMITER_BASED_DECODER:
+                    socketChannel.pipeline().addLast(FrameDecoderFactory.newInstance(DefaultDelimiterDecoder.class));
+                    socketChannel.pipeline().addLast(new StringDecoder());
+                    socketChannel.pipeline().addLast(new NettyClientHandler(DefaultDelimiterDecoder.DEFAULT_DELIMITER));
+                    break;
+                default:
+                    logger.error("HandlerType should be given!!!");
+                    throw new RuntimeException("HandlerType should be given");
+            }
         }
     }
 }

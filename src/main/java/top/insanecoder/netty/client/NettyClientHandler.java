@@ -17,8 +17,9 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
     private byte[] msgToSend;
     private int counter = 0;
 
-    public NettyClientHandler() {
-        String str = "QUERY TIME" + System.getProperty("line.separator");
+    public NettyClientHandler(String delimiter) {
+        logger.info("the delimiter is " + delimiter);
+        String str = "QUERY TIME" + delimiter;
         msgToSend = str.getBytes();
     }
 

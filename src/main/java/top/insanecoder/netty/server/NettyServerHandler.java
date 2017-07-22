@@ -17,13 +17,18 @@ public class NettyServerHandler extends ChannelHandlerAdapter {
 
     private static Logger logger = Logger.getLogger(NettyServerHandler.class);
 
+    private String delimiter;
     private int counter = 0;
+
+    public NettyServerHandler (String delimiter) {
+        this.delimiter = delimiter;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String body = (String) msg;
         logger.info(body + " : " + counter++);
-        String curTime = new Date(System.currentTimeMillis()).toString() + System.getProperty("line.separator");
+        String curTime = new Date(System.currentTimeMillis()).toString() + this.delimiter;
         ByteBuf resp = Unpooled.copiedBuffer(curTime.getBytes());
         ctx.writeAndFlush(resp);
     }

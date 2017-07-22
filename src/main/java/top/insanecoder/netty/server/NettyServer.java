@@ -1,12 +1,19 @@
 package top.insanecoder.netty.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import org.apache.log4j.Logger;
+import top.insanecoder.netty.enums.HandlerTypeEnum;
+import top.insanecoder.netty.factory.DefaultDelimiterDecoder;
+import top.insanecoder.netty.factory.DefaultLineFrameDecoder;
+import top.insanecoder.netty.factory.FrameDecoderFactory;
 
 /**
  * @author shaohang.zsh
@@ -14,11 +21,15 @@ import io.netty.handler.codec.string.StringDecoder;
  */
 public class NettyServer {
 
-    public static void main(String[] args) throws InterruptedException {
-        new NettyServer().bind(8007);
-    }
+    private static final Logger logger = Logger.getLogger(NettyServer.class);
 
-    private void bind(int port) throws InterruptedException {
+    private HandlerTypeEnum handlerType;
+
+    public NettyServer buildHandlerType (HandlerTypeEnum handlerType) {
+        this.handlerType = handlerType;
+        return this;
+    }
+    public void bind(int port) throws InterruptedException {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -39,9 +50,21 @@ public class NettyServer {
     private class ChildChannelHandler extends ChannelInitializer<SocketChannel> {
 
         protected void initChannel(SocketChannel socketChannel) throws Exception {
-            socketChannel.pipeline().addLast(new LineBasedFrameDecoder(1024));
-            socketChannel.pipeline().addLast(new StringDecoder());
-            socketChannel.pipeline().addLast(new NettyServerHandler());
+            switch (handlerType) {
+                case LINE_BASED_DECODER:
+                    socketChannel.pipeline().addLast(FrameDecoderFactory.newInstance(DefaultLineFrameDecoder.class));
+                    socketChannel.pipeline().addLast(new StringDecoder());
+                    socketChannel.pipeline().addLast(new NettyServerHandler(System.getProperty("line.separator")));
+                    break;
+                case DELIMITER_BASED_DECODER:
+                    socketChannel.pipeline().addLast(FrameDecoderFactory.newInstance(DefaultDelimiterDecoder.class));
+                    socketChannel.pipeline().addLast(new StringDecoder());
+                    socketChannel.pipeline().addLast(new NettyServerHandler(DefaultDelimiterDecoder.DEFAULT_DELIMITER));
+                    break;
+                default:
+                    logger.error("HandlerType should be given");
+                    throw new RuntimeException("HandlerType should be given");
+            }
         }
     }
 }
