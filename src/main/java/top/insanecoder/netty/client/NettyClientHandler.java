@@ -16,9 +16,15 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
 
     private byte[] msgToSend;
     private int counter = 0;
+    private int length;
 
     public NettyClientHandler(String delimiter) {
-        logger.info("the delimiter is " + delimiter);
+        this(delimiter, 100);
+    }
+
+    public NettyClientHandler(String delimiter, int length) {
+        this.length = length;
+        logger.info("the delimiter is " + delimiter + ", length is " + length);
         String str = "QUERY TIME" + delimiter;
         msgToSend = str.getBytes();
     }
@@ -27,7 +33,7 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
         ByteBuf byteBuf = null;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < length; i++) {
             byteBuf = Unpooled.buffer(msgToSend.length);
             byteBuf.writeBytes(msgToSend);
             ctx.writeAndFlush(byteBuf);

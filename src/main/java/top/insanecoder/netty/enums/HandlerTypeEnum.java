@@ -8,7 +8,9 @@ public enum HandlerTypeEnum {
 
     LINE_BASED_DECODER("01", "line based Handler"),
 
-    DELIMITER_BASED_DECODER("02", "delimiter based Handler");
+    DELIMITER_BASED_DECODER("02", "delimiter based Handler"),
+
+    MESSAGE_PACK("03", "message pack based encoder and decoder");
 
     private String code;
     private String description;

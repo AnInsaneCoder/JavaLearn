@@ -10,7 +10,7 @@ import top.insanecoder.netty.server.NettyServer;
 public class ServerBoot {
 
     public static void main(String[] args) throws InterruptedException, InstantiationException, IllegalAccessException {
-        new NettyServer().buildHandlerType(HandlerTypeEnum.DELIMITER_BASED_DECODER).bind(8007);
+        new NettyServer().buildHandlerType(HandlerTypeEnum.MESSAGE_PACK).bind(8007);
     }
 
 }

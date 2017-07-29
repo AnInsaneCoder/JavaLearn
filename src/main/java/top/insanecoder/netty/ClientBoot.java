@@ -11,6 +11,6 @@ public class ClientBoot {
 
     public static void main(String[] args) throws InterruptedException, InstantiationException, IllegalAccessException {
 
-        new NettyClient().buildHandlerType(HandlerTypeEnum.DELIMITER_BASED_DECODER).connect("127.0.0.1", 8007);
+        new NettyClient().buildHandlerType(HandlerTypeEnum.MESSAGE_PACK).connect("127.0.0.1", 8007);
     }
 }

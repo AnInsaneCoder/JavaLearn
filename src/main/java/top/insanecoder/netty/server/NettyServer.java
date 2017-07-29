@@ -14,6 +14,8 @@ import top.insanecoder.netty.enums.HandlerTypeEnum;
 import top.insanecoder.netty.factory.DefaultDelimiterDecoder;
 import top.insanecoder.netty.factory.DefaultLineFrameDecoder;
 import top.insanecoder.netty.factory.FrameDecoderFactory;
+import top.insanecoder.netty.serialization.msgpack.MsgpackDecoder;
+import top.insanecoder.netty.serialization.msgpack.MsgpackEncoder;
 
 /**
  * @author shaohang.zsh
@@ -60,6 +62,11 @@ public class NettyServer {
                     socketChannel.pipeline().addLast(FrameDecoderFactory.newInstance(DefaultDelimiterDecoder.class));
                     socketChannel.pipeline().addLast(new StringDecoder());
                     socketChannel.pipeline().addLast(new NettyServerHandler(DefaultDelimiterDecoder.DEFAULT_DELIMITER));
+                    break;
+                case MESSAGE_PACK:
+                    socketChannel.pipeline().addLast(new MsgpackDecoder());
+                    socketChannel.pipeline().addLast(new MsgpackEncoder());
+                    socketChannel.pipeline().addLast(new MsgpackServerHandler());
                     break;
                 default:
                     logger.error("HandlerType should be given");
