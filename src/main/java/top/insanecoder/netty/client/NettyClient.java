@@ -5,6 +5,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
 import org.apache.log4j.Logger;
 import top.insanecoder.netty.enums.HandlerTypeEnum;
@@ -59,9 +61,11 @@ public class NettyClient {
                     socketChannel.pipeline().addLast(new NettyClientHandler(DefaultDelimiterDecoder.DEFAULT_DELIMITER));
                     break;
                 case MESSAGE_PACK:
+                    socketChannel.pipeline().addLast(new LengthFieldBasedFrameDecoder(65535, 0, 2, 0, 2));
                     socketChannel.pipeline().addLast(new MsgpackDecoder());
+                    socketChannel.pipeline().addLast(new LengthFieldPrepender(2));
                     socketChannel.pipeline().addLast(new MsgpackEncoder());
-                    socketChannel.pipeline().addLast(new MsgpackClientHandler(1));
+                    socketChannel.pipeline().addLast(new MsgpackClientHandler(100));
                     break;
                 default:
                     logger.error("HandlerType should be given!!!");
